@@ -10,6 +10,8 @@ class LiteLLMAuthenticatedUser(AuthenticatedUser):
     Wrapper class to make UserAPIKeyAuth compatible with MCP's AuthenticatedUser
     """
 
-    def __init__(self, user_api_key_auth: UserAPIKeyAuth, mcp_auth_header: Optional[str] = None):
+    def __init__(
+        self, user_api_key_auth: UserAPIKeyAuth, mcp_auth_header: Optional[str] = None
+    ):
         self.user_api_key_auth = user_api_key_auth
         self.mcp_auth_header = mcp_auth_header

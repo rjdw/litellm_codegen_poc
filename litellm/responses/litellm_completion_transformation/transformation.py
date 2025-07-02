@@ -111,7 +111,10 @@ class LiteLLMCompletionResponsesConfig:
         """
         Transform a Responses API request into a Chat Completion request
         """
-        tools, web_search_options = LiteLLMCompletionResponsesConfig.transform_responses_api_tools_to_chat_completion_tools(
+        (
+            tools,
+            web_search_options,
+        ) = LiteLLMCompletionResponsesConfig.transform_responses_api_tools_to_chat_completion_tools(
             responses_api_request.get("tools") or []  # type: ignore
         )
         litellm_completion_request: dict = {
@@ -472,7 +475,10 @@ class LiteLLMCompletionResponsesConfig:
     @staticmethod
     def transform_responses_api_tools_to_chat_completion_tools(
         tools: Optional[List[Union[FunctionToolParam, OpenAIMcpServerTool]]],
-    ) -> Tuple[List[Union[ChatCompletionToolParam, OpenAIMcpServerTool]], Optional[OpenAIWebSearchOptions]]:
+    ) -> Tuple[
+        List[Union[ChatCompletionToolParam, OpenAIMcpServerTool]],
+        Optional[OpenAIWebSearchOptions],
+    ]:
         """
         Transform a Responses API tools into a Chat Completion tools
         """
@@ -485,9 +491,17 @@ class LiteLLMCompletionResponsesConfig:
         for tool in tools:
             if tool.get("type") == "mcp":
                 chat_completion_tools.append(cast(OpenAIMcpServerTool, tool))
-            elif tool.get("type") == "web_search_preview" or tool.get("type") == "web_search":
-                _search_context_size: Literal["low", "medium", "high"] = cast(Literal["low", "medium", "high"], tool.get("search_context_size"))
-                _user_location: Optional[OpenAIWebSearchUserLocation] = cast(Optional[OpenAIWebSearchUserLocation], tool.get("user_location") or None)
+            elif (
+                tool.get("type") == "web_search_preview"
+                or tool.get("type") == "web_search"
+            ):
+                _search_context_size: Literal["low", "medium", "high"] = cast(
+                    Literal["low", "medium", "high"], tool.get("search_context_size")
+                )
+                _user_location: Optional[OpenAIWebSearchUserLocation] = cast(
+                    Optional[OpenAIWebSearchUserLocation],
+                    tool.get("user_location") or None,
+                )
                 web_search_options = OpenAIWebSearchOptions(
                     search_context_size=_search_context_size,
                     user_location=_user_location,

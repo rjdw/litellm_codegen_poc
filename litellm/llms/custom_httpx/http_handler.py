@@ -540,7 +540,7 @@ class AsyncHTTPHandler:
     ) -> Dict[str, Any]:
         """
         Helper method to get SSL connector initialization arguments for aiohttp TCPConnector.
-        
+
         SSL Configuration Priority:
         1. If ssl_context is provided -> use the custom SSL context
         2. If ssl_verify is False -> disable SSL verification (ssl=False)
@@ -552,7 +552,7 @@ class AsyncHTTPHandler:
         connector_kwargs: Dict[str, Any] = {
             "local_addr": ("0.0.0.0", 0) if litellm.force_ipv4 else None,
         }
-        
+
         if ssl_context is not None:
             # Priority 1: Use the provided custom SSL context
             connector_kwargs["ssl"] = ssl_context
@@ -563,7 +563,7 @@ class AsyncHTTPHandler:
             # Priority 3: Use our default SSL context with certifi CA bundle
             # This covers ssl_verify=True and ssl_verify=None cases
             connector_kwargs["ssl"] = AsyncHTTPHandler._get_ssl_context()
-        
+
         return connector_kwargs
 
     @staticmethod
@@ -587,11 +587,8 @@ class AsyncHTTPHandler:
 
         verbose_logger.debug("Creating AiohttpTransport...")
         return LiteLLMAiohttpTransport(
-            client=lambda: ClientSession(
-                connector=TCPConnector(**connector_kwargs)
-            ),
+            client=lambda: ClientSession(connector=TCPConnector(**connector_kwargs)),
         )
-    
 
     @staticmethod
     def _get_ssl_context() -> ssl.SSLContext:
@@ -599,9 +596,8 @@ class AsyncHTTPHandler:
         Get the SSL context for the AiohttpTransport
         """
         import certifi
-        return ssl.create_default_context(
-            cafile=certifi.where()
-        )
+
+        return ssl.create_default_context(cafile=certifi.where())
 
     @staticmethod
     def _create_httpx_transport() -> Optional[AsyncHTTPTransport]:

@@ -415,10 +415,10 @@ class HttpPassThroughEndpointHelpers(BasePassthroughUtils):
 
         for field_name, field_value in form_data.items():
             if isinstance(field_value, (StarletteUploadFile, UploadFile)):
-                files[field_name] = (
-                    await HttpPassThroughEndpointHelpers._build_request_files_from_upload_file(
-                        upload_file=field_value
-                    )
+                files[
+                    field_name
+                ] = await HttpPassThroughEndpointHelpers._build_request_files_from_upload_file(
+                    upload_file=field_value
                 )
             else:
                 form_data_dict[field_name] = field_value
@@ -470,19 +470,19 @@ class HttpPassThroughEndpointHelpers(BasePassthroughUtils):
             "litellm_params": {
                 "metadata": _metadata,
                 "proxy_server_request": {
-                        "url": str(request.url),
-                        "method": request.method,
-                        "body": copy.copy(_parsed_body),  # use copy instead of deepcopy
-                    }
+                    "url": str(request.url),
+                    "method": request.method,
+                    "body": copy.copy(_parsed_body),  # use copy instead of deepcopy
+                },
             },
             "call_type": "pass_through_endpoint",
             "litellm_call_id": litellm_call_id,
             "passthrough_logging_payload": passthrough_logging_payload,
         }
 
-        logging_obj.model_call_details["passthrough_logging_payload"] = (
-            passthrough_logging_payload
-        )
+        logging_obj.model_call_details[
+            "passthrough_logging_payload"
+        ] = passthrough_logging_payload
 
         return kwargs
 
@@ -1024,6 +1024,7 @@ async def initialize_pass_through_endpoints(
         None
     """
     import uuid
+
     verbose_proxy_logger.debug("initializing pass through endpoints")
     from litellm.proxy._types import CommonProxyErrors, LiteLLMRoutes
     from litellm.proxy.proxy_server import app, premium_user
@@ -1031,11 +1032,11 @@ async def initialize_pass_through_endpoints(
     for endpoint in pass_through_endpoints:
         if isinstance(endpoint, PassThroughGenericEndpoint):
             endpoint = endpoint.model_dump()
-        
+
         # Auto-generate ID for backwards compatibility if not present
         if endpoint.get("id") is None:
             endpoint["id"] = str(uuid.uuid4())
-            
+
         _target = endpoint.get("target", None)
         _path: Optional[str] = endpoint.get("path", None)
         if _path is None:
@@ -1062,7 +1063,9 @@ async def initialize_pass_through_endpoints(
             continue
 
         # Add exact path route
-        verbose_proxy_logger.debug("Initializing pass through endpoint: %s (ID: %s)", _path, endpoint.get("id"))
+        verbose_proxy_logger.debug(
+            "Initializing pass through endpoint: %s (ID: %s)", _path, endpoint.get("id")
+        )
         InitPassThroughEndpointHelpers.add_exact_path_route(
             app=app,
             path=_path,
@@ -1087,7 +1090,9 @@ async def initialize_pass_through_endpoints(
                 cost_per_request=endpoint.get("cost_per_request", None),
             )
 
-        verbose_proxy_logger.debug("Added new pass through endpoint: %s (ID: %s)", _path, endpoint.get("id"))
+        verbose_proxy_logger.debug(
+            "Added new pass through endpoint: %s (ID: %s)", _path, endpoint.get("id")
+        )
 
 
 async def _get_pass_through_endpoints_from_db(
@@ -1117,12 +1122,10 @@ async def _get_pass_through_endpoints_from_db(
                 returned_endpoints.append(endpoint)
     else:
         # Find specific endpoint by ID
-        found_endpoint = _find_endpoint_by_id(
-            pass_through_endpoint_data, endpoint_id
-        )
+        found_endpoint = _find_endpoint_by_id(pass_through_endpoint_data, endpoint_id)
         if found_endpoint is not None:
             returned_endpoints.append(found_endpoint)
-    
+
     return returned_endpoints
 
 
@@ -1182,22 +1185,22 @@ async def update_pass_through_endpoints(
         )
 
     # Find the endpoint to update
-    found_endpoint = _find_endpoint_by_id(
-        pass_through_endpoint_data, endpoint_id
-    )
-    
+    found_endpoint = _find_endpoint_by_id(pass_through_endpoint_data, endpoint_id)
+
     if found_endpoint is None:
         raise HTTPException(
             status_code=404,
-            detail={
-                "error": f"Endpoint with ID '{endpoint_id}' not found"
-            },
+            detail={"error": f"Endpoint with ID '{endpoint_id}' not found"},
         )
 
     # Find the index for updating the list
     endpoint_index = None
     for idx, endpoint in enumerate(pass_through_endpoint_data):
-        _endpoint = PassThroughGenericEndpoint(**endpoint) if isinstance(endpoint, dict) else endpoint
+        _endpoint = (
+            PassThroughGenericEndpoint(**endpoint)
+            if isinstance(endpoint, dict)
+            else endpoint
+        )
         if _endpoint.id == endpoint_id:
             endpoint_index = idx
             break
@@ -1212,20 +1215,20 @@ async def update_pass_through_endpoints(
 
     # Get the update data as dict, excluding None values for partial updates
     update_data = data.model_dump(exclude_none=True)
-    
+
     # Start with existing endpoint data
     endpoint_dict = found_endpoint.model_dump()
-    
+
     # Update with new data (only non-None values)
     endpoint_dict.update(update_data)
-    
+
     # Preserve existing ID if not provided in update and endpoint has ID
     if "id" not in update_data and found_endpoint.id is not None:
         endpoint_dict["id"] = found_endpoint.id
-    
+
     # Create updated endpoint object
     updated_endpoint = PassThroughGenericEndpoint(**endpoint_dict)
-    
+
     # Update the list
     pass_through_endpoint_data[endpoint_index] = endpoint_dict
 
@@ -1239,7 +1242,9 @@ async def update_pass_through_endpoints(
         data=updated_data, user_api_key_dict=user_api_key_dict
     )
 
-    return PassThroughEndpointResponse(endpoints=[updated_endpoint] if updated_endpoint else [])
+    return PassThroughEndpointResponse(
+        endpoints=[updated_endpoint] if updated_endpoint else []
+    )
 
 
 @router.post(
@@ -1335,10 +1340,8 @@ async def delete_pass_through_endpoints(
         )
 
     # Find the endpoint to delete
-    found_endpoint = _find_endpoint_by_id(
-        pass_through_endpoint_data, endpoint_id
-    )
-    
+    found_endpoint = _find_endpoint_by_id(pass_through_endpoint_data, endpoint_id)
+
     if found_endpoint is None:
         raise HTTPException(
             status_code=400,
@@ -1348,11 +1351,15 @@ async def delete_pass_through_endpoints(
                 )
             },
         )
-    
+
     # Find the index for deleting from the list
     endpoint_index = None
     for idx, endpoint in enumerate(pass_through_endpoint_data):
-        _endpoint = PassThroughGenericEndpoint(**endpoint) if isinstance(endpoint, dict) else endpoint
+        _endpoint = (
+            PassThroughGenericEndpoint(**endpoint)
+            if isinstance(endpoint, dict)
+            else endpoint
+        )
         if _endpoint.id == endpoint_id:
             endpoint_index = idx
             break
@@ -1364,7 +1371,7 @@ async def delete_pass_through_endpoints(
                 "error": f"Could not find index for endpoint with ID '{endpoint_id}'"
             },
         )
-    
+
     # Remove the endpoint
     pass_through_endpoint_data.pop(endpoint_index)
     response_obj = found_endpoint
@@ -1388,11 +1395,11 @@ def _find_endpoint_by_id(
 ) -> Optional[PassThroughGenericEndpoint]:
     """
     Find an endpoint by ID.
-    
+
     Args:
         endpoints_data: List of endpoint data (dicts or PassThroughGenericEndpoint objects)
         endpoint_id: ID to search for
-        
+
     Returns:
         Found endpoint or None if not found
     """
@@ -1406,7 +1413,7 @@ def _find_endpoint_by_id(
         # Only compare IDs to IDs
         if _endpoint is not None and _endpoint.id == endpoint_id:
             return _endpoint
-    
+
     return None
 
 

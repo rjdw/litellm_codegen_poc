@@ -130,7 +130,7 @@ class VertexBase:
         from google.auth import identity_pool
 
         return identity_pool.Credentials.from_info(json_obj)
-    
+
     def _credentials_from_identity_pool_with_aws(self, json_obj):
         from google.auth import aws
 

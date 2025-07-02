@@ -236,11 +236,11 @@ if MCP_AVAILABLE:
             "GLOBAL MCP TOOLS: %s", global_mcp_tool_registry.list_tools()
         )
 
-        tools_from_mcp_servers: List[MCPTool] = (
-            await global_mcp_server_manager.list_tools(
-                user_api_key_auth=user_api_key_auth,
-                mcp_auth_header=mcp_auth_header,
-            )
+        tools_from_mcp_servers: List[
+            MCPTool
+        ] = await global_mcp_server_manager.list_tools(
+            user_api_key_auth=user_api_key_auth,
+            mcp_auth_header=mcp_auth_header,
         )
         verbose_logger.debug("TOOLS FROM MCP SERVERS: %s", tools_from_mcp_servers)
         if tools_from_mcp_servers is not None:
@@ -249,11 +249,11 @@ if MCP_AVAILABLE:
 
     @client
     async def call_mcp_tool(
-        name: str, 
-        arguments: Optional[Dict[str, Any]] = None, 
+        name: str,
+        arguments: Optional[Dict[str, Any]] = None,
         user_api_key_auth: Optional[UserAPIKeyAuth] = None,
-        mcp_auth_header: Optional[str] = None, 
-        **kwargs: Any
+        mcp_auth_header: Optional[str] = None,
+        **kwargs: Any,
     ) -> List[Union[MCPTextContent, MCPImageContent, MCPEmbeddedResource]]:
         """
         Call a specific tool with the provided arguments
@@ -273,15 +273,15 @@ if MCP_AVAILABLE:
             "litellm_logging_obj", None
         )
         if litellm_logging_obj:
-            litellm_logging_obj.model_call_details["mcp_tool_call_metadata"] = (
-                standard_logging_mcp_tool_call
-            )
-            litellm_logging_obj.model_call_details["model"] = (
-                f"{MCP_TOOL_NAME_PREFIX}: {standard_logging_mcp_tool_call.get('name') or ''}"
-            )
-            litellm_logging_obj.model_call_details["custom_llm_provider"] = (
-                standard_logging_mcp_tool_call.get("mcp_server_name")
-            )
+            litellm_logging_obj.model_call_details[
+                "mcp_tool_call_metadata"
+            ] = standard_logging_mcp_tool_call
+            litellm_logging_obj.model_call_details[
+                "model"
+            ] = f"{MCP_TOOL_NAME_PREFIX}: {standard_logging_mcp_tool_call.get('name') or ''}"
+            litellm_logging_obj.model_call_details[
+                "custom_llm_provider"
+            ] = standard_logging_mcp_tool_call.get("mcp_server_name")
 
         # Try managed server tool first
         if name in global_mcp_server_manager.tool_name_to_mcp_server_name_mapping:
@@ -315,7 +315,7 @@ if MCP_AVAILABLE:
             )
 
     async def _handle_managed_mcp_tool(
-        name: str, 
+        name: str,
         arguments: Dict[str, Any],
         user_api_key_auth: Optional[UserAPIKeyAuth] = None,
         mcp_auth_header: Optional[str] = None,
@@ -350,9 +350,10 @@ if MCP_AVAILABLE:
         """Handle MCP requests through StreamableHTTP."""
         try:
             # Validate headers and log request info
-            user_api_key_auth, mcp_auth_header = (
-                await UserAPIKeyAuthMCP.user_api_key_auth_mcp(scope)
-            )
+            (
+                user_api_key_auth,
+                mcp_auth_header,
+            ) = await UserAPIKeyAuthMCP.user_api_key_auth_mcp(scope)
             # Set the auth context variable for easy access in MCP functions
             set_auth_context(
                 user_api_key_auth=user_api_key_auth,
@@ -374,9 +375,10 @@ if MCP_AVAILABLE:
         """Handle MCP requests through SSE."""
         try:
             # Validate headers and log request info
-            user_api_key_auth, mcp_auth_header = (
-                await UserAPIKeyAuthMCP.user_api_key_auth_mcp(scope)
-            )
+            (
+                user_api_key_auth,
+                mcp_auth_header,
+            ) = await UserAPIKeyAuthMCP.user_api_key_auth_mcp(scope)
             # Set the auth context variable for easy access in MCP functions
             set_auth_context(
                 user_api_key_auth=user_api_key_auth,
@@ -421,7 +423,9 @@ if MCP_AVAILABLE:
     ############ Auth Context Functions ####################
     ########################################################
 
-    def set_auth_context(user_api_key_auth: UserAPIKeyAuth, mcp_auth_header: Optional[str] = None) -> None:
+    def set_auth_context(
+        user_api_key_auth: UserAPIKeyAuth, mcp_auth_header: Optional[str] = None
+    ) -> None:
         """
         Set the UserAPIKeyAuth in the auth context variable.
 

@@ -158,7 +158,7 @@ class MCPServerManager:
             return list(self.get_registry().keys())
 
     async def list_tools(
-        self, 
+        self,
         user_api_key_auth: Optional[UserAPIKeyAuth] = None,
         mcp_auth_header: Optional[str] = None,
     ) -> List[MCPTool]:
@@ -194,7 +194,9 @@ class MCPServerManager:
     #########################################################
     # Methods that call the upstream MCP servers
     #########################################################
-    def _create_mcp_client(self, server: MCPServer, mcp_auth_header: Optional[str] = None) -> MCPClient:
+    def _create_mcp_client(
+        self, server: MCPServer, mcp_auth_header: Optional[str] = None
+    ) -> MCPClient:
         """
         Create an MCPClient instance for the given server.
 
@@ -214,7 +216,9 @@ class MCPServerManager:
             timeout=60.0,
         )
 
-    async def _get_tools_from_server(self, server: MCPServer, mcp_auth_header: Optional[str] = None) -> List[MCPTool]:
+    async def _get_tools_from_server(
+        self, server: MCPServer, mcp_auth_header: Optional[str] = None
+    ) -> List[MCPTool]:
         """
         Helper method to get tools from a single MCP server.
 
@@ -240,10 +244,10 @@ class MCPServerManager:
                 self.tool_name_to_mcp_server_name_mapping[tool.name] = server.name
 
             return tools
-    
+
     async def call_tool(
-        self, 
-        name: str, 
+        self,
+        name: str,
         arguments: Dict[str, Any],
         user_api_key_auth: Optional[UserAPIKeyAuth] = None,
         mcp_auth_header: Optional[str] = None,
@@ -265,11 +269,10 @@ class MCPServerManager:
                 arguments=arguments,
             )
             return await client.call_tool(call_tool_params)
-    
+
     #########################################################
     # End of Methods that call the upstream MCP servers
     #########################################################
-
 
     def initialize_tool_name_to_mcp_server_name_mapping(self):
         """

@@ -63,7 +63,7 @@ class MCPClient:
         """Initialize the transport and session."""
         if self._session:
             return  # Already connected
-            
+
         headers = self._get_auth_headers()
 
         if self.transport_type == MCPTransport.sse:
@@ -90,7 +90,7 @@ class MCPClient:
     async def __aexit__(self, exc_type, exc_val, exc_tb):
         """Cleanup when exiting context manager."""
         if self._session:
-            await self._session_ctx.__aexit__(exc_type, exc_val, exc_tb) # type: ignore
+            await self._session_ctx.__aexit__(exc_type, exc_val, exc_tb)  # type: ignore
         if self._transport_ctx:
             await self._transport_ctx.__aexit__(exc_type, exc_val, exc_tb)
 
@@ -99,14 +99,14 @@ class MCPClient:
         if self._session:
             try:
                 # Ensure session is properly closed
-                await self._session.close()  # type: ignore 
+                await self._session.close()  # type: ignore
             except Exception:
                 pass
             self._session = None
 
         if self._context:
             try:
-                await self._context.__aexit__(None, None, None) # type: ignore
+                await self._context.__aexit__(None, None, None)  # type: ignore
             except Exception:
                 pass
             self._context = None
@@ -154,11 +154,9 @@ class MCPClient:
 
         if self._session is None:
             raise ValueError("Session is not initialized")
-        
+
         tool_result = await self._session.call_tool(
             name=call_tool_request_params.name,
             arguments=call_tool_request_params.arguments,
         )
         return tool_result
-        
-
