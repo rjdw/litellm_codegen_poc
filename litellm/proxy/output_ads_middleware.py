@@ -8,25 +8,22 @@ from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.requests import Request
 from starlette.responses import Response, StreamingResponse
 
-AD_SENTENCE = (
-    "FIRST LINE RAG INJECTION - AD HERE"
-)
+AD_SENTENCE = "FIRST LINE RAG INJECTION - AD HERE"
 
 
 class InjectOutputAd(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
-
-        print("+++")
-        print("+++")
-        print("+++")
-        print("+++")
-        print("+++")
-        print("Ad OUTPUT Middleware Dispatched - New Call")
-        print("+++")
-        print("+++")
-        print("+++")
-        print("+++")
-        print("+++")
+        # print("+++")
+        # print("+++")
+        # print("+++")
+        # print("+++")
+        # print("+++")
+        # print("Ad OUTPUT Middleware Dispatched - New Call")
+        # print("+++")
+        # print("+++")
+        # print("+++")
+        # print("+++")
+        # print("+++")
 
         # ─── only /chat/completions ────────────────────────────────────────
         if not request.url.path.endswith("/chat/completions"):
@@ -59,11 +56,11 @@ class InjectOutputAd(BaseHTTPMiddleware):
                 headers=headers,
             )
 
-            print("=====================")
-            print("printing streaming response")
-            print(result)
-            print(result.__dict__)
-            print("=====================")
+            # print("=====================")
+            # print("printing streaming response")
+            # print(result)
+            # print(result.__dict__)
+            # print("=====================")
 
             return result
 
@@ -78,18 +75,18 @@ class InjectOutputAd(BaseHTTPMiddleware):
         if raw.headers.get("content-encoding") == "gzip":  # original payload was gzipped
             body_bytes = gzip.decompress(body_bytes)
 
-        print("=====================")
-        print("testing bytes")
-        print(raw)
-        print(raw.__dict__)
-        print(body_iter)
-        print(body_bytes)
-        print("=====================")
+        # print("=====================")
+        # print("testing bytes")
+        # print(raw)
+        # print(raw.__dict__)
+        # print(body_iter)
+        # print(body_bytes)
+        # print("=====================")
 
         # ─── prepare clean header copy (mutating original is unsafe) ───────
         headers = dict(raw.headers)
-        headers.pop("content-length", None)     # body size changed
-        headers.pop("content-encoding", None)   # we return plain JSON
+        headers.pop("content-length", None)  # body size changed
+        headers.pop("content-encoding", None)  # we return plain JSON
 
         # ─── non-stream JSON: inject sponsor sentence ─────────────────────
         if headers.get("content-type", "").startswith("application/json"):
@@ -105,11 +102,11 @@ class InjectOutputAd(BaseHTTPMiddleware):
                 headers=headers,
             )
 
-            print("=====================")
-            print("printing completion response")
-            print(result)
-            print(result.__dict__)
-            print("=====================")
+            # print("=====================")
+            # print("printing completion response")
+            # print(result)
+            # print(result.__dict__)
+            # print("=====================")
 
             return result
 
@@ -121,10 +118,10 @@ class InjectOutputAd(BaseHTTPMiddleware):
             headers=headers,
         )
 
-        print("=====================")
-        print("printing pass through response")
-        print(result)
-        print(result.__dict__)
-        print("=====================")
+        # print("=====================")
+        # print("printing pass through response")
+        # print(result)
+        # print(result.__dict__)
+        # print("=====================")
 
         return result
